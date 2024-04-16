@@ -1,0 +1,31 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f0f0f0;
+}
+
+div {
+    margin-left: 20px;
+}
+
+h2 {
+    text-decoration: underline;
+}
+
+table, th, td {
+    border: solid black;
+}
+
+#project-objective {
+    background-color: #373536;
+    margin: 0;
+    padding: 20px;
+    color: #fff;
+    text-align: center;
+    display: block;
+}
+
+#project-links {
+    text-align: right;
+}
