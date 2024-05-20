@@ -56,20 +56,203 @@
                 <tr>
                     <td>123</td>
                     <td>123</td>
-                    <td>Bryan</td>
+                    <td>Bryan EE</td>
                     <td>Group Leader</td>
                 </tr>
             </table>
         </div>
         <div>
-            <h2 id="documentation">Project Documentation</h2>
-            <h3>What is Private Set Intersection?</h3>
+            <h2 id="documentation">introduction to our website</h2>
+            <h3>Purpose</h3>
+                <p>The purpose of this project is to develop a privacy-preserving healthcare application that utilises the Private-Set Intersection(PSI) protocol. 
+                    Specifically, the project seeks to create a system which allows an individual to determine the risk of contracting a particular disease, 
+                    without the need to reveal their sensitive genetic information to healthcare providers.
+                    By implementing this PSI protocol, the system essentially ensures the privacy of both the individual client and the healthcare provider 
+                    whilst allowing for the disease risk assessment to be carried out based on the intersection of the individual's genetic data and the hospital's set of disease-causing genes. 
+                </p>
 
-            <h3>How to find an intersection of to private set?</h3>
+            <h3>Project Description</h3>
+                <p>
+                    The Private Set Intersection protocol, is a cryptographic technique that allows two parties to compute the intersection of their sets without 
+                    revealing individual elements. In the Diffie-Hellman based PSI, both parties will perform a key exchange 
+                </p>
 
-            <h3>How to generate an intersection of 2 sets of information without revealing the content of the data set?</h3>
+            <h3>Introduction: What is Private Set Intersection (PSI)? </h3>
+                <p>
+                    Private Set Intersection (PSI) is a secure two-party computation (2PC) problem that allows for two parties to compute the intersection between both sets of data, 
+                    while the elements that are not in the intersection remain private to the other party. There are many different approaches to this problem, however, for this project, we will be focusing on the Diffie-Hellman based PSI approach. <br />
 
-            <h3>What is Oblivious Transfer?</h3>
+                    How can you find an intersection of two private data sets without revealing the contents of each data set? <br />
+                    
+                    Preprocessing: We will first generate a cryptographic representation of the private sets through methods such as encryption or hashing. These will be used to hide the actual values in the sets for both parties.
+                    Comparison: The cryptographic representation of the 2 sets is compared to determine the intersection. Comparison must be performed in a way that the actual elements in the sets remain confidential.
+                    Output: Result of the PSI protocol is the intersected elements. Both parties would know the identity of the intersected elements as they know the original element of the set. <br />
+                </p>
+                <p>  
+                    To illustrate, this is a basic process of how the Diffie-Hellman based Private Set Intersection works:  <br /> <br />
+                    
+                    1. Initial Setup:  <br />
+                    a. Two parties, known as Alice and Bob, agree on a DH group description, including a generator g and an order q.  <br />
+                    b. They also have hash functions (e.g., H) to ensure the original set data stay hidden. <br /> <br />
+                    
+                    2. Protocol Execution:  <br />
+                    The protocol consists of four rounds: <br /> <br />
+
+                    a. Alice: <br />
+                      I. Picks a secret random exponent a from the range [0,𝑞) <br />
+                     II. Hashes all items in her input set 𝑋   <br />
+                    III. Raises the hashed set to the power of 𝑎 and sends the results to Bob. (𝑋 ) <br /> <br />
+
+                    b. Bob: <br />
+                      I. Picks a secret random exponent b from the same range.  <br />
+                     II. Follows the same procedure as Alice, with his input set 𝑌  <br />
+                    III. Raise the hashed set to the power of 𝑏 and send the results to Alice. (𝑌 ) <br /> <br />
+
+                    c. Alice: <br />
+                     I. Receives Bob’s message and raises it to the power of 𝑎. (𝑌 ) <br />
+                    II. Send the result back to Bob. <br /> <br />
+                    
+                    d. Bob: <br />
+                     I. Receives Alice’s message and raises it to the power of 𝑏. (𝑋 ) <br />
+                    II. Send the result back to Alice. <br /> <br />
+                    
+                    The intersected elements are now revealed, as both parties can compare the common elements in 𝑋 and 𝑌 . <br />
+                    As Alice knows the original elements in 𝑋, and Bob knows the original elements in 𝑌, both parties will know the original intersected elements, while remaining oblivious to the identity of the other elements. 
+                </p>
+                <p>
+                    What are the benefits of using PSI? <br /><br />
+                    
+                    PSI allows privacy of the information to be preserved, while allowing for a meaningful exchange of information between two parties. No additional information aside from the intersected elements is disclosed, <br />
+                    ensuring both parties’ data remain confidential. This can be useful in multiple ways, and this is explored in the two examples below: <br /> <br />
+                    
+                    Voting - PSI allows the user to check if a voter is accidentally registered in 2 different states by checking if any registered voters intersect in the list of voters between the two states. <br />
+                    Doing this through the use of PSI maintains the privacy and identity of the other voters to the other state. <br /><br />
+                    
+                    Healthcare - PSI allows for the user to compare his/her genes against the hospital’s database to compute the risk of a particular disease without revealing her genes. On the other hand, <br />
+                    the hospital also does not wish to reveal its discoveries to the user as the hospital has spent time and money researching the genes. As this data is private to both the user and the hospital, <br />
+                    PSI allows for the user to only discover the risk of the disease without revealing additional information. <br /><br />
+                </p>
+                <p>
+                    What are some challenges of implementing PSI in our application? <br /><br />
+
+                    1. Asymmetric Gene Set Size <br /><br />
+                        The specialised hospital is expected to have a significantly larger set of gene
+                        set data as compared to the patient. This would lead to an asymmetric gene set
+                        size between the two parties, which may significantly increase the computation
+                        time. Certain protocols need to be implemented to ensure the computation
+                        process remains efficient. To address this issue, cuckoo hashing can be used to
+                        ensure a constant time lookup of the data, ensuring that the application remains
+                        efficient. <br /><br />
+
+                    2. Ensuring Privacy of Gene Sets <br /><br />
+                        A collection of individual gene data is known and stored in a database. If
+                        hashing alone is used in the process of PSI, malicious attackers may use
+                        dictionary attacks to compromise the privacy of the patient or the hospital. To
+                        address this issue, homomorphic encryption can be used to ensure the privacy
+                        of both parties. Homomorphic encryption allows for computation of the data
+                        while it remains encrypted, allowing both parties to determine the intersected
+                        sets without revealing additional information. <br /><br />
+                </p>
+                <p>
+                    What is oblivious transfer and how can it be used in PSI? <br /><br />
+
+                        Oblivious Pseudorandom Function (OPRF) Preprocessing is a two-party protocol
+                        between a server and a client. The main property of OPRF is obliviousness, where the
+                        server learns nothing about the client’s input, while the client does not learn anything
+                        about the server’s secret key. (IETF, 2020) <br /><br />
+                        
+                    To illustrate how OPRF can be used in PSI we have two parties Alice (the Client) and
+                    Bob (the Server). <br /><br />
+
+                        1. Alice holds a private set of items, denoted as 𝑋, while Bob holds another private
+                        set of items, denoted as 𝑌. <br />
+                        2. OPRFs allow Alice to evaluate the PRF function on her set 𝑋 using Bob’s secret
+                        key. The result is an “oblivious” output. <br />
+                        3. Bob remains unaware of the specific items in Alice’s set, and Alice learns
+                        nothing about Bob’s secret key. <br />
+                        4. After evaluating the OPRF, Alice sends the oblivious output to Bob. <br />
+                        5. Bob can then check whether the items in his set 𝑌 match the received output. <br />
+                        6. If there’s a match, it implies that the corresponding item is in the intersection of
+                        𝑋 and 𝑌. <br />
+                </p>
+                <p>
+                    What is homomorphic encryption and how can it be used in PSI? <br /><br />
+
+                        Homomorphic encryption allows mathematical operations on data to be carried out on a
+                        ciphertext. There are a few types of homomorphic encryption: <br /><br />
+
+                        Partially Homomorphic encryption - Only a defined operation can be performed infinite times
+                        on the ciphertext. Relatively easy to design. <br /><br />
+
+                        Somewhat Homomorphic encryption - Limited number of addition or multiplication operations
+                        are allowed. More difficult to design a system that supports a set number of operations than
+                        one operation infinite times. <br /><br />
+
+                        Fully Homomorphic encryption - Infinite number of additions or multiplication for ciphertext is
+                        enabled. Programs for any functionality can run on encrypted inputs to produce an encrypted
+                        output. <br /><br />
+
+                        How does homomorphic encryption work? <br /><br />
+                        For a given message m, we want to apply capitalising to m. <br />
+                        First we encrypt m. <br /> 
+                        C=enc(m). <br /> 
+                        Evaluate another function f(x)=x+127 on C to get a new encrypted value C'=f(C) <br /> 
+                        Then we can decrypt C' to get the computed message back. <br /><br />
+                </p>  
+                <p>
+                    What are the problems implementing homomorphic encryption? <br /><br />
+
+                        Efficiency: Homomorphic encryption is computationally expensive. Performing operations on
+                        encrypted data takes significantly more time than on plaintext data. <br />
+
+                        Resource Intensive: It requires substantial memory and computational resources, especially
+                        for fully homomorphic encryption (FHE) schemes. <br /><br />
+
+                    What is Secure Multi-Party Computation (SMPC)? <br /><br />
+
+                        Secure Multi-Party Computation deals with the protection of input data of 2 parties
+                        communicating with each other. One such method is known as Shamir’s Secret Sharing. Two
+                        (or more) parties secretly distribute a secret (such as an encryption key), with each party
+                        obtaining 1 part of the secret share. The secret will remain concealed unless a minimum
+                        number of parties (the threshold) collaborate to reconstruct the secret. <br /><br />
+
+                    What is Cuckoo Hashing? <br /><br />
+
+                        Cuckoo Hashing is a form of open addressing where each non-empty cell in a hash
+                        table contains a key or a key-value pair. It uses 2 hash functions to determine the
+                        location for each key and requires a table of size 1.5 times the number of keys. The
+                        presence of a key can be found by examining the corresponding cell in the table. To
+                        illustrate: <br /><br />
+
+                        1. We have a hash table of 2 arrays, A and B. <br /> 
+                        2. When inserting a key, we compute its hash, using both hash functions. <br />
+                        3. If the cell in array A corresponding to the first hash function is empty → we 
+                        place the key there. <br />
+                        4. If the cell in array A corresponding to the first hash function is full → we evict the
+                        existing key from array A and move it to array B. <br />
+                        5. We will then insert the new key into the vacated cell in array A. <br /> 
+                        6. If the cell in array B corresponding to the second hash function is also occupied,
+                        we repeat the process potentially evicting another key. <br /> 
+                        7. The cycle continues until we find an empty cell or reach a max number of 
+                        iterations. <br />
+                    
+                </p>
+            <h3>SWOT</h3>
+                <img src="C:\Users\agkgg\OneDrive\Desktop\FYP Repo\FYP-24-S2-21\pictures\Screenshot 2024-05-19 170815.png" alt="SWOT PICTURE">
+                <p>
+                    Based on the SWOT analysis, by applying the Diffie-Hellman based PSI protocol, it allows us to achieve greater privacy between parties in the healthcare industry, 
+                    opens greater collaboration with other working industries that handle like-minded sensitive data, optimises efficiency in treatment and diagnostic with the greater 
+                    ease in combining datasets and also encourages innovative solutions in modern healthcare analysis. <br />
+
+                    However, in order to achieve the above successes, our implementation has to invest in optimising algorithms to reduce the computational extensiveness and 
+                    implement interoperable solutions and standards to ensure flexibility and scalability.	 <br />
+                </p>
+            
+            <h3>GANTT CHART</h3>
+                <img src="" alt="">
+
+            <h3>WORK BREAKDOWN STRUCTURE</h3>
+                <img src="C:\Users\agkgg\OneDrive\Desktop\FYP Repo\FYP-24-S2-21\pictures\Screenshot 2024-05-19 171448.png" alt="WBS">  
 
             <h3>What is Homomorphic Encryption?</h3>
 
