@@ -1,7 +1,7 @@
 # DiseaseRiskCalcultor/settings.py
 
 INSTALLED_APPS = [
-    ...
+    
     'DiseaseRiskCalculator',
     'django.contrib.auth',
     'django.contrib.contenttypes',
