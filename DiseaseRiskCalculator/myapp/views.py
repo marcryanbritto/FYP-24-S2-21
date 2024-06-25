@@ -19,11 +19,13 @@ def home(request):
 def home(request):
     return render(request, 'DiseaseRiskCalculator/home.html')
 
+# Fetch constant, intersect and total n --> To be implemented futher later
 class Risk_form(forms.Form):
     c = forms.FloatField(label='c')
     intersect = forms.FloatField(label='intersect')
     n = forms.FloatField(label='n')
 
+# To calculate the percentage of risk
 @login_required
 def Calculate_risk(request):
     if request.method == 'POST':
