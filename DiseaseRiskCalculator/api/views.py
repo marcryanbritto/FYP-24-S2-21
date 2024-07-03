@@ -14,17 +14,52 @@ from Crypto.Random import get_random_bytes
 from Crypto.Util.Padding import pad, unpad
 import base64
 
-from rest_framework import generics
+from rest_framework import generics, status
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from .serializers import AccountSerializer
+from .serializers import AccountSerializer, CreateAccountSerializer
 from .models import Account
 
-# Account Class API View that allows creation of JSON Account Object
+# Account Class API View that lists JSON Account Object
 # To access: /api/account
-class AccountView(generics.CreateAPIView):
+class AccountView(generics.ListAPIView):
     queryset = Account.objects.all()
     serializer_class = AccountSerializer
+
+# Account Class Creation based on form data
+class CreateAccountView(APIView):
+    serializer_class = CreateAccountSerializer
+
+    # Account created with POST request
+    def post(self, request, format=None):
+        serializer = self.serializer_class(data=request.data)
+
+        # If nothing wrong with data received from POST
+        if serializer.is_valid():
+            name = serializer.data.get('name')
+            username = serializer.data.get('username')
+            password = serializer.data.get('password')
+            role = serializer.data.get('role')
+            email = serializer.data.get('email')
+
+            # Check if username already exists in db
+            queryset = Account.objects.filter(username=username)
+            if queryset.exists():
+                # For debugging purpose to identify accounts only!!
+                account = queryset[0]
+                return Response(AccountSerializer(account).data, status=status.HTTP_412_PRECONDITION_FAILED)
+            else:
+                # Else create new room
+                account = Account(name = name, 
+                            username = username, 
+                            password = password,
+                            role = role,
+                            email = email)
+                account.save()
+            
+            return Response(AccountSerializer(account).data, status=status.HTTP_201_CREATED)
+    
+        return Response({'Bad Request': 'Invalid data...'}, status=status.HTTP_400_BAD_REQUEST)
 
 class CustomLoginView(LoginView):
     template_name = 'DiseaseRiskCalculator/login.html' # to change to filename

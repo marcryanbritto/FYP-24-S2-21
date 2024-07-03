@@ -10,7 +10,7 @@ class AccountSerializer(serializers.ModelSerializer):
                   'isDeactivated', 'email', 'registrationDate')
 
 # Takes data that needs to be sent to POST
-class CreateAccountSeriallizer(serializers.ModelSerializer):
+class CreateAccountSerializer(serializers.ModelSerializer):
     class Meta:
         model = Account
         fields = ('name', 'username', 'password', 'role', 'email')

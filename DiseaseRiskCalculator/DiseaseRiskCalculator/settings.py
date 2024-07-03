@@ -15,7 +15,7 @@ from pathlib import Path
 # =============================
 # Input Secret Key Here!!!
 # =============================
-SECRET_KEY_INPUT = 'django-insecure-bbe7@itf7isz23ht7@@x%n)(-=nzypk7$2i5se+3^bn0i(88j%'
+SECRET_KEY_INPUT = 'TO BE ADDED'
 # =============================
 # Input Secret Key Here!!!
 # =============================
