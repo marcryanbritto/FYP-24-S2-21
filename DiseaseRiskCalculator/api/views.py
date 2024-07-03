@@ -1,9 +1,9 @@
-# DiseaseRiskCalcultor/views.py
-
+# Create your views here.
 from django.shortcuts import render, redirect
 from django.contrib.auth.views import LoginView, LogoutView
 from django.contrib.auth.decorators import login_required
 from django import forms
+from django.http import HttpResponse
 
 from cryptography.hazmat.primitives.asymmetric import dh
 from cryptography.hazmat.primitives import serialization
@@ -36,7 +36,7 @@ class Risk_form(forms.Form):
 
 # To calculate the percentage of risk
 @login_required
-def Calculate_risk(request):
+def calculate_risk(request):
     if request.method == 'POST':
         form = Risk_form(request.POST)
         if form.is_valid():

@@ -1,4 +1,5 @@
-# DiseaseRiskCalculator/urls.py
+# api/urls.py
+# Store URLs local to the app
 
 from django.urls import path
 from .views import CustomLoginView, CustomLogoutView, home, calculate_risk, AES_encrypt, DH_key_exchange
