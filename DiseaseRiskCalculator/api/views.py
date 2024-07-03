@@ -14,6 +14,17 @@ from Crypto.Random import get_random_bytes
 from Crypto.Util.Padding import pad, unpad
 import base64
 
+from rest_framework import generics
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from .serializers import AccountSerializer
+from .models import Account
+
+# Account Class API View that allows creation of JSON Account Object
+# To access: /api/account
+class AccountView(generics.CreateAPIView):
+    queryset = Account.objects.all()
+    serializer_class = AccountSerializer
 
 class CustomLoginView(LoginView):
     template_name = 'DiseaseRiskCalculator/login.html' # to change to filename
