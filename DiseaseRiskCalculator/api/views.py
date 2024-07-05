@@ -18,7 +18,8 @@ from rest_framework import generics, status
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from .serializers import AccountSerializer, CreateAccountSerializer
-from .models import Account
+from .models import Account, GeneData
+from .forms import FileUploadForm
 
 # Account Class API View that lists JSON Account Object
 # To access: /api/account
@@ -148,3 +149,24 @@ def DH_key_exchange(request):
         return render(request, 'DiseaseRiskCalculator/DH_key_exchange.html', context)
     else:
         return HttpResponse('Error initiating DH process...')
+
+# DiseaseRiskCalculator/views.py
+@login_required
+def upload_file(request):
+    if request.method == 'POST':
+        form = FileUploadForm(request.POST, request.FILES)
+        if form.is_valid():
+            file = request.FILES['file']
+            for line in file:
+                line = line.decode('utf-8').strip()  # Decode and strip any extra whitespace
+                if line:
+                    parts = line.split(',')
+                    if len(parts) == 2:
+                        name, sequence = parts
+                        gene = GeneData(name=name)
+                        gene.set_sequence(sequence)
+                        gene.save()
+            return redirect('upload_success')
+    else:
+        form = FileUploadForm()
+    return render(request, 'DiseaseRiskCalculator/upload.html', {'form': form})
