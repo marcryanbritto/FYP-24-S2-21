@@ -35,7 +35,7 @@
 }
 
 .button-container button {
-  background-color: #4caf50;
+  background-color: #007bff;
   color: white;
   padding: 10px 20px;
   border: none;
@@ -46,5 +46,5 @@
 }
 
 .button-container button:hover {
-  background-color: #45a049;
+  background-color: #003366;
 }
