@@ -82,5 +82,6 @@ class GeneData(models.Model):
 #     def __str__(self):
 #         return self.name
 #     hello
+# hehe
 
 
