@@ -1,13 +1,13 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import './styles/CreatePatientAccount.css';
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import "./styles/CreatePatientAccount.css";
 
 const CreatePatientAccount = () => {
   const [formData, setFormData] = useState({
-    username: '',
-    email: '',
-    password: '',
-    confirmPassword: '',
+    username: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
   });
 
   const navigate = useNavigate(); // Hook for navigation
@@ -22,11 +22,17 @@ const CreatePatientAccount = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log('Form data submitted:', formData);
+    console.log("Form data submitted:", formData);
     // Add your form submission logic here
 
     // Navigate back to the login page
-    navigate('/');
+    navigate("/");
+  };
+
+  const handleBack = () => {
+    console.log("Back clicked");
+    // Replace with your back logic, e.g., navigating back to a previous page
+    navigate("/"); // Example navigation back to the main dashboard
   };
 
   return (
@@ -80,6 +86,9 @@ const CreatePatientAccount = () => {
         <div className="button-container">
           <button type="submit">Create</button>
         </div>
+        <button onClick={handleBack} className="dashboard-button">
+          Back
+        </button>
       </form>
     </div>
   );
