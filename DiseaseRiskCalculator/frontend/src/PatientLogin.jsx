@@ -8,6 +8,7 @@ const PatientLogin = () => {
     password: "",
   });
 
+  const [error, setError] = useState(null);
   const navigate = useNavigate();
 
   const handleChange = (e) => {
