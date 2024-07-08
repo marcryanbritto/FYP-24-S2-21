@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'api.apps.ApiConfig',
+    'corsheaders', # new
 ]
 
 MIDDLEWARE = [
@@ -56,6 +57,11 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware', # new
+]
+
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3000",  # React app URL
 ]
 
 ROOT_URLCONF = 'DiseaseRiskCalculator.urls'

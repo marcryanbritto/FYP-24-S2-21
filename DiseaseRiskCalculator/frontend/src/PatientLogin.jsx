@@ -18,10 +18,35 @@ const PatientLogin = () => {
     });
   };
 
-  const handleSubmit = (e) => {
+  // const handleSubmit = (e) => {
+  //   e.preventDefault();
+  //   console.log("Login data submitted:", formData);
+  //   navigate("/patient-dashboard");
+  // };
+
+  // New handleSubmit
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Login data submitted:", formData);
-    navigate("/patient-dashboard");
+    try {
+      const response = await fetch("/api/login/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+
+      if (!response.ok) {
+        throw new Error("Login failed");
+      }
+
+      const data = await response.json();
+      console.log("Login successful:", data);
+      navigate("/patient-dashboard");
+    } catch (error) {
+      console.error("Error logging in:", error);
+      setError("Invalid email or password. Please try again.");
+    }
   };
 
   return (

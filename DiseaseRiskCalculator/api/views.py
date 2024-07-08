@@ -1,9 +1,15 @@
 # Create your views here.
 from django.shortcuts import render, redirect
+from django.contrib.auth import authenticate, login
 from django.contrib.auth.views import LoginView, LogoutView
 from django.contrib.auth.decorators import login_required
 from django import forms
 from django.http import HttpResponse
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from django.utils.decorators import method_decorator
+from django.views import View
+import json
 
 from cryptography.hazmat.primitives.asymmetric import dh
 from cryptography.hazmat.primitives import serialization
@@ -62,8 +68,21 @@ class CreateAccountView(APIView):
     
         return Response({'Bad Request': 'Invalid data...'}, status=status.HTTP_400_BAD_REQUEST)
 
-class CustomLoginView(LoginView):
-    template_name = 'DiseaseRiskCalculator/login.html' # to change to filename
+# class CustomLoginView(LoginView):
+#     template_name = 'DiseaseRiskCalculator/login.html' # to change to filename
+
+@method_decorator(csrf_exempt, name='dispatch')
+class CustomLoginView(View):
+    def post(self, request, *args, **kwargs):
+        data = json.loads(request.body)
+        username = data.get('username')
+        password = data.get('password')
+        user = authenticate(request, username=username, password=password)
+        if user is not None:
+            login(request, user)
+            return JsonResponse({"message": "Login successful"})
+        else:
+            return JsonResponse({"message": "Invalid credentials"}, status=400)
 
 class CustomLogoutView(LogoutView):
     template_name = 'DiseaseRiskCalculator/logout.html' # to change to filename
