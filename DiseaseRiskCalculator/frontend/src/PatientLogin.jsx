@@ -51,7 +51,7 @@ const PatientLogin = () => {
 
   return (
     <div className="title-container">
-      PSI APP
+      DISEASE RISK CALCULATOR
       <div className="login-container-wrapper">
         <div className="login-container">
           <h2>Login</h2>
