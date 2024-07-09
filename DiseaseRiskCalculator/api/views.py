@@ -75,9 +75,9 @@ class CreateAccountView(APIView):
 class CustomLoginView(View):
     def post(self, request, *args, **kwargs):
         data = json.loads(request.body)
-        username = data.get('username')
+        email = data.get('email')
         password = data.get('password')
-        user = authenticate(request, username=username, password=password)
+        user = authenticate(request, email=email, password=password)
         if user is not None:
             login(request, user)
             return JsonResponse({"message": "Login successful"})

@@ -79,6 +79,7 @@ const PatientLogin = () => {
                 required
               />
             </div>
+            {error && <div className="error">{error}</div>}
             <div className="button-group">
               <button type="submit">Login</button>
               <div className="button-spacing"></div>
