@@ -36,11 +36,11 @@ const PatientLogin = () => {
         },
         body: JSON.stringify(formData),
       });
-
+  
       if (!response.ok) {
         throw new Error("Login failed");
       }
-
+  
       const data = await response.json();
       console.log("Login successful:", data);
       navigate("/patient-dashboard");

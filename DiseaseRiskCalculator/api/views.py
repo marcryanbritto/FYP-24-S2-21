@@ -68,23 +68,38 @@ class CreateAccountView(APIView):
     
         return Response({'Bad Request': 'Invalid data...'}, status=status.HTTP_400_BAD_REQUEST)
 
-# class CustomLoginView(LoginView):
-#     template_name = 'DiseaseRiskCalculator/login.html' # to change to filename
-
-@method_decorator(csrf_exempt, name='dispatch')
-class CustomLoginView(View):
-    def post(self, request, *args, **kwargs):
+@csrf_exempt
+def login_view(request):
+    if request.method == 'POST':
         data = json.loads(request.body)
         email = data.get('email')
         password = data.get('password')
-
-        # Authenticate the user
+        
         user = authenticate(request, username=email, password=password)
         if user is not None:
             login(request, user)
-            return JsonResponse({"message": "Login successful"})
+            return JsonResponse({'message': 'Login successful'}, status=200)
         else:
-            return JsonResponse({"message": "Invalid credentials"}, status=400)
+            return JsonResponse({'error': 'Invalid email or password'}, status=400)
+    return JsonResponse({'error': 'Invalid request method'}, status=405)
+
+# class CustomLoginView(LoginView):
+#     template_name = 'DiseaseRiskCalculator/login.html' # to change to filename
+
+# @method_decorator(csrf_exempt, name='dispatch')
+# class CustomLoginView(View):
+#     def post(self, request, *args, **kwargs):
+#         data = json.loads(request.body)
+#         email = data.get('email')
+#         password = data.get('password')
+
+#         # Authenticate the user
+#         user = authenticate(request, username=email, password=password)
+#         if user is not None:
+#             login(request, user)
+#             return JsonResponse({"message": "Login successful"})
+#         else:
+#             return JsonResponse({"message": "Invalid credentials"}, status=400)
 
 class CustomLogoutView(LogoutView):
     template_name = 'DiseaseRiskCalculator/logout.html' # to change to filename
