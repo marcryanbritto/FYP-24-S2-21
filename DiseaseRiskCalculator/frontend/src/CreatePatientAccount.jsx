@@ -20,6 +20,11 @@ const CreatePatientAccount = () => {
     });
   };
 
+  // Likely implement logic here to...
+  // 1) Check password requirements (if any)
+  // 2) Check username/email is unique
+  // 3) Encrypt password
+  // 4) Send data to backend
   const handleBack = () => {
     console.log("Back clicked");
     // Replace with your back logic, e.g., navigating back to a previous page
