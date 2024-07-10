@@ -60,6 +60,12 @@ MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware', # new
 ]
 
+AUTHENTICATION_BACKENDS = [
+    'api.authentication_backends.EmailBackend',
+    'django.contrib.auth.backends.ModelBackend',
+]
+
+
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",  # React app URL
 ]
