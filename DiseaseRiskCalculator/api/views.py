@@ -68,20 +68,35 @@ class CreateAccountView(APIView):
     
         return Response({'Bad Request': 'Invalid data...'}, status=status.HTTP_400_BAD_REQUEST)
 
+import json
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth import authenticate, login
+
 @csrf_exempt
 def login_view(request):
     if request.method == 'POST':
-        data = json.loads(request.body)
-        email = data.get('email')
-        password = data.get('password')
-        
-        user = authenticate(request, username=email, password=password)
-        if user is not None:
-            login(request, user)
-            return JsonResponse({'message': 'Login successful'}, status=200)
-        else:
-            return JsonResponse({'error': 'Invalid email or password'}, status=400)
-    return JsonResponse({'error': 'Invalid request method'}, status=405)
+        try:
+            data = json.loads(request.body)
+            email = data.get('email')
+            password = data.get('password')
+            
+            if not email or not password:
+                return JsonResponse({'error': 'Email and password are required'}, status=400)
+
+            user = authenticate(request, username=email, password=password)
+            if user is not None:
+                login(request, user)
+                return JsonResponse({'message': 'Login successful'}, status=200)
+            else:
+                return JsonResponse({'error': 'Invalid email or password'}, status=400)
+        except json.JSONDecodeError:
+            return JsonResponse({'error': 'Invalid JSON'}, status=400)
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)
+    else:
+        return JsonResponse({'error': 'Invalid request method'}, status=405)
+
 
 # class CustomLoginView(LoginView):
 #     template_name = 'DiseaseRiskCalculator/login.html' # to change to filename
