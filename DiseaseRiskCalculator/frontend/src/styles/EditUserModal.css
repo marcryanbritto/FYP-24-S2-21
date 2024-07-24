@@ -1,0 +1,124 @@
+/* EditUserModal.css */
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+.modal-dialog {
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  width: 600px; /* Increased width for better display */
+  max-width: 90%;
+  margin: auto;
+  padding: 16px; /* Added padding inside the modal */
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px;
+  border-bottom: 1px solid #ccc;
+}
+
+.modal-title {
+  margin: 0;
+  font-size: 20px;
+}
+
+.close-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 18px;
+}
+
+.modal-body {
+  padding: 16px; /* Increased padding for better layout */
+}
+
+.input-group {
+  margin-bottom: 15px;
+}
+
+.input-group label {
+  display: block;
+  margin-bottom: 5px;
+}
+
+.input-group input,
+.input-group select {
+  width: 100%;
+  padding: 12px; /* Increased padding for better fit */
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box; /* Ensure padding is included in total width */
+}
+
+.checkbox-group {
+  display: flex;
+  align-items: left;
+  margin-bottom: 15px;
+}
+
+.checkbox-group input {
+  margin-right: 5px;
+}
+
+.checkbox-group label {
+  margin: 0; /* Remove margin for better alignment */
+}
+
+.save-button {
+  width: 100%;
+  padding: 12px; /* Increased padding for button */
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.save-button:hover {
+  background-color: #0056b3;
+}
+
+.gene-details {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+.gene-details-title {
+  font-weight: bold;
+}
+.gene-details-value {
+  word-break: break-all;
+}
+
+/* Additional styles for similarity results */
+.similarity-results {
+  margin-top: 20px;
+}
+.similarity-result {
+  background-color: #f9f9f9;
+  padding: 10px;
+  border-radius: 4px;
+  margin-bottom: 10px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+.similarity-result-title {
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+.similarity-result-content div {
+  margin-bottom: 5px;
+}

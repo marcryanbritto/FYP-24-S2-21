@@ -1,0 +1,108 @@
+/* src/styles/DoctorDashboard.css */
+.doctor-dashboard {
+    padding: 20px;
+  }
+  
+  .genes-table-container {
+    overflow-x: auto;
+  }
+  
+  .genes-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+  }
+  
+  .genes-table th,
+  .genes-table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+  }
+  
+  .genes-table th {
+    background-color: #f2f2f2;
+  }
+  .edit-gene-button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .edit-gene-button:hover {
+    background-color: #0056b3;
+  }
+  .delete-button {
+    padding: 10px 20px;
+    background-color: #f44336;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .delete-button:hover {
+    background-color: #d32f2f;
+  }
+
+  .upload-btn {
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+
+  .upload-btn:hover {
+    background-color: #45a049;
+  }
+
+  .formula-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 20px;
+  }
+
+
+  .formula-text {
+    width: 70%;
+  }
+
+  .formula-text h4 {
+    margin-bottom: 10px;
+  }
+
+  .formula-text p {
+    font-size: 16px;
+  }
+
+  .update-formula-btn {
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+
+  .update-formula-btn:hover {
+    background-color: #0056b3;
+  }
+  
+  .view-gene-button{
+    background-color: #26df48cd;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+
+  .view-gene-button:hover {
+    background-color: #1dbf3f;
+  }
