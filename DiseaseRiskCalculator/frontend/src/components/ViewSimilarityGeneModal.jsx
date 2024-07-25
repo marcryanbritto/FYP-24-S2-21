@@ -70,7 +70,6 @@ function ViewSimilarityGeneModal({ geneId, onSave, onClose, show, token }) {
               <div key={index} className='similarity-result'>
                 <div className='similarity-result-title'>Similarity Result {index + 1}</div>
                 <div className='similarity-result-content'>
-                  <div><strong>Doctor Email:</strong> {result.doctor_email}</div>
                   <div><strong>Gene Name:</strong> {result.gene_name}</div>
                   <div><strong>Similarity:</strong> {result.similarity}</div>
                 </div>
