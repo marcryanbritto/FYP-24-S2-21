@@ -11,7 +11,7 @@ function UploadGeneModal({ geneId, onSave, onClose, show, token }) {
   useEffect(() => {
     if (show && geneId) {
       // Fetch gene data if editing
-      fetch(`http://165.22.244.125:8000/api/genes/${geneId}/`, {
+      fetch(`https://165.22.244.125:8000/api/genes/${geneId}/`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },

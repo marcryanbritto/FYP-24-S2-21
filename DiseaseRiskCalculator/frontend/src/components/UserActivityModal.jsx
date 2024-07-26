@@ -16,7 +16,7 @@ function UserActivityModal({ show, onClose }) {
 
   const fetchUserActivity = async () => {
     try {
-      const response = await axios.get('http://165.22.244.125:8000/api/user-activity/', {
+      const response = await axios.get('https://165.22.244.125:8000/api/user-activity/', {
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
         }

@@ -36,7 +36,7 @@ function RegisterPage() {
     }
 
     try {
-      const response = await axios.post('http://165.22.244.125:8000/api/patient-registration/', {
+      const response = await axios.post('https://165.22.244.125:8000/api/patient-registration/', {
         email,
         password,
         role: 'patient'
