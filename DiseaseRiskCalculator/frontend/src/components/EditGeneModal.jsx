@@ -9,7 +9,8 @@ function EditGeneModal({ geneId, onSave, onClose, show, token }) {
     if (show && geneId) {
       // Fetch gene data
       const token = localStorage.getItem('accessToken');
-      fetch(`http://165.22.244.125:8000/api/genes/${geneId}/`, {
+      // fetch(`http://165.22.244.125:8000/api/genes/${geneId}/`, {
+      fetch(`http://127.0.0.1:8000/api/genes/${geneId}/`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },

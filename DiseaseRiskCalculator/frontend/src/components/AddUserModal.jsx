@@ -35,9 +35,11 @@ function AddUserModal({ onClose, show }) {
     try {
       let endpoint;
       if (role === 'patient') {
-        endpoint = 'http://165.22.244.125:8000/api/patient-registration/';
+        // endpoint = 'http://165.22.244.125:8000/api/patient-registration/';
+        endpoint = 'http://127.0.0.1:8000/api/patient-registration/'; // Local Host Test
       } else if (role === 'doctor' || role === 'admin') {
-        endpoint = 'http://165.22.244.125:8000/api/users/';
+        // endpoint = 'http://165.22.244.125:8000/api/users/';
+        endpoint = 'http://127.0.0.1:8000/api/users/' // Local Host Test
       } else {
         setMessage('Invalid role selected');
         setShowMessageModal(true);
