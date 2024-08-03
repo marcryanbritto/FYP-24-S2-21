@@ -1,24 +1,69 @@
 import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import Modal from './Modal';
 import '../styles/EditUserModal.css'; // Ensure this is the correct path
 
-function AddUserModal({ onSave, onClose, show }) {
+function AddUserModal({ onClose, show }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [role, setRole] = useState('patient');
   const [active, setActive] = useState(true);
-  
+  const [message, setMessage] = useState('');
+  const [showMessageModal, setShowMessageModal] = useState(false);
+
   useEffect(() => {
     if (!show) {
       setEmail('');
       setPassword('');
+      setConfirmPassword('');
       setRole('patient');
       setActive(true);
     }
   }, [show]);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    onSave({ email, password, role, active });
+    if (password !== confirmPassword) {
+      setMessage('Passwords do not match');
+      setShowMessageModal(true);
+      return;
+    }
+
+    const userData = { email, password, role };
+
+    try {
+      let endpoint;
+      if (role === 'patient') {
+        endpoint = 'http://165.22.244.125:8000/api/patient-registration/';
+      } else if (role === 'doctor' || role === 'admin') {
+        endpoint = 'http://165.22.244.125:8000/api/users/';
+      } else {
+        setMessage('Invalid role selected');
+        setShowMessageModal(true);
+        return;
+      }
+
+      await axios.post(endpoint, userData, {
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
+        },
+      });
+
+      setMessage('User created successfully');
+      setShowMessageModal(true);
+    } catch (error) {
+      setMessage(`Error creating user: ${error.response ? error.response.data : error.message}`);
+      setShowMessageModal(true);
+    }
+  };
+
+  const closeMessageModal = () => {
+    setShowMessageModal(false);
+    if (message === 'User created successfully') {
+      onClose(); // Close the modal only if the user was created successfully
+    }
   };
 
   if (!show) return null;
@@ -53,12 +98,12 @@ function AddUserModal({ onSave, onClose, show }) {
               />
             </div>
             <div className="input-group">
-              <label htmlFor="password">Confirm Password</label>
+              <label htmlFor="confirmPassword">Confirm Password</label>
               <input
                 type="password"
-                id="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                id="confirmPassword"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
                 required
               />
             </div>
@@ -87,6 +132,11 @@ function AddUserModal({ onSave, onClose, show }) {
           </form>
         </div>
       </div>
+      {showMessageModal && (
+        <Modal show={showMessageModal} handleClose={closeMessageModal}>
+          <p>{message}</p>
+        </Modal>
+      )}
     </div>
   );
 }
