@@ -11,6 +11,49 @@ from django.contrib.auth import authenticate
 from .models import User, UserActivity, Gene, Formula
 from .serializers import UserSerializer, UserCreateSerializer, GeneSerializer, GeneFileUploadSerializer, GeneTextInputSerializer, Gene, UserActivitySerializer, FormulaSerializer
 
+from cryptography.hazmat.primitives.asymmetric import dh
+from cryptography.hazmat.primitives import serialization
+from cryptography.hazmat.backends import default_backend
+from cryptography.hazmat.primitives.kdf.hkdf import HKDF
+from cryptography.hazmat.primitives import hashes
+from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
+import os
+
+# Generate DH parameters
+parameters = dh.generate_parameters(generator=2, key_size=2048, backend=default_backend())
+
+def generate_private_key():
+    return parameters.generate_private_key()
+
+def generate_public_key(private_key):
+    return private_key.public_key()
+
+def load_public_key(public_bytes):
+    return serialization.load_pem_public_key(public_bytes, backend=default_backend())
+
+def compute_shared_secret(private_key, peer_public_key):
+    shared_key = private_key.exchange(peer_public_key)
+    derived_key = HKDF(
+        algorithm=hashes.SHA256(),
+        length=32,
+        salt=None,
+        info=b'gene comparison',
+        backend=default_backend()
+    ).derive(shared_key)
+    return derived_key
+
+def encrypt_message(key, message):
+    iv = os.urandom(16)
+    cipher = Cipher(algorithms.AES(key), modes.CFB(iv), backend=default_backend())
+    encryptor = cipher.encryptor()
+    return iv + encryptor.update(message.encode()) + encryptor.finalize()
+
+def decrypt_message(key, encrypted_message):
+    iv = encrypted_message[:16]
+    cipher = Cipher(algorithms.AES(key), modes.CFB(iv), backend=default_backend())
+    decryptor = cipher.decryptor()
+    return decryptor.update(encrypted_message[16:]) + decryptor.finalize()
+
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
@@ -201,16 +244,54 @@ class GeneViewSet(viewsets.ModelViewSet):
     
     @action(detail=False, methods=['post'], permission_classes=[IsAuthenticated])
     def calculate_similarity(self, request):
-        patient_gene = request.data.get('patient_gene_id')
-        patient_gene = Gene.objects.filter(id=patient_gene)
-        patient_gene_decrypted = patient_gene[0].decrypt_sequence()
+        # Log the request data
+        print("Received request data:", request.data)
+        
+        patient_gene_id = request.data.get('patient_gene_id')
+        if not patient_gene_id:
+            print("Error: Patient gene ID is required.")
+            return Response({"error": "Patient gene ID is required."}, status=status.HTTP_400_BAD_REQUEST)
 
+        patient_gene = Gene.objects.filter(id=patient_gene_id).first()
         if not patient_gene:
-            return Response({"error": "Patient gene is required."}, status=status.HTTP_400_BAD_REQUEST)
+            print("Error: Patient gene not found.")
+            return Response({"error": "Patient gene not found."}, status=status.HTTP_404_NOT_FOUND)
+
+        # Patient Keygen
+        patient_private_key = generate_private_key()
+        patient_public_key = generate_public_key(patient_private_key)
+
+        # Doctor Keygen
+        doctor_private_key = generate_private_key()
+        doctor_public_key = generate_public_key(doctor_private_key)
+
+        # Doctor's public key should be provided in the request
+        # doctor_public_key_bytes = request.data.get('doctor_public_key')
+        # if not doctor_public_key_bytes:
+        #     print("Error: Doctor's public key is required.")
+        #     return Response({"error": "Doctor's public key is required."}, status=status.HTTP_400_BAD_REQUEST)
+
+        # try:
+        #     doctor_public_key = load_public_key(doctor_public_key_bytes)
+        # except Exception as e:
+        #     print("Error loading doctor's public key:", e)
+        #     return Response({"error": "Invalid doctor's public key."}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Compute shared secret
+        shared_key = compute_shared_secret(patient_private_key, doctor_public_key)
+
+        patient_gene_decrypted = patient_gene.decrypt_sequence()
+        patient_gene_encrypted = encrypt_message(shared_key, patient_gene_decrypted)
+
+        # Print encrypted and decrypted strings for debugging
+        print("Encrypted patient gene sequence:", patient_gene_encrypted)
+        dec_test = decrypt_message(shared_key, patient_gene_encrypted)
+        print("Decrypted patient gene sequence:", dec_test.decode())
 
         # Get the latest formula
         formula = Formula.objects.order_by('-created_at').first()
         if not formula:
+            print("Error: No formula found.")
             return Response({"error": "No formula found."}, status=status.HTTP_404_NOT_FOUND)
 
         # Get all doctor genes
@@ -218,8 +299,15 @@ class GeneViewSet(viewsets.ModelViewSet):
 
         results = []
         for doctor_gene in doctor_genes:
-            decrypted_sequence = doctor_gene.decrypt_sequence()  # Decrypt the gene sequence
-            similarity = self.calculate_gene_similarity(patient_gene_decrypted, decrypted_sequence, formula.formula)
+            decrypted_sequence = doctor_gene.decrypt_sequence()
+            doctor_gene_encrypted = encrypt_message(shared_key, decrypted_sequence)
+            
+            # Print encrypted and decrypted strings for doctor gene
+            print("Encrypted doctor gene sequence:", doctor_gene_encrypted)
+            decrypted_doctor_test = decrypt_message(shared_key, doctor_gene_encrypted)
+            print("Decrypted doctor gene sequence (for verification):", decrypted_doctor_test.decode())
+
+            similarity = self.calculate_gene_similarity(shared_key, patient_gene_encrypted, doctor_gene_encrypted, formula.formula)
             if similarity >= 0.5:
                 results.append({
                     'doctor_email': doctor_gene.uploaded_by.email,
@@ -232,18 +320,18 @@ class GeneViewSet(viewsets.ModelViewSet):
         UserActivity.objects.create(user=request.user, action='calculate_similarity')
         return Response(results, status=status.HTTP_200_OK)
 
-    def calculate_gene_similarity(self, patient_gene, doctor_gene, formula):
-        patient_genes = set(re.findall(r'\w+', patient_gene.upper()))
-        doctor_genes = set(re.findall(r'\w+', doctor_gene.upper()))
+    def calculate_gene_similarity(self, shared_key, patient_gene_encrypted, doctor_gene_encrypted, formula):
+        patient_genes = set(re.findall(r'\w+', decrypt_message(shared_key, patient_gene_encrypted).decode().upper()))
+        doctor_genes = set(re.findall(r'\w+', decrypt_message(shared_key, doctor_gene_encrypted).decode().upper()))
 
         intersect = len(patient_genes.intersection(doctor_genes))
         n = len(doctor_genes)
 
         # Parse and evaluate the formula
-        c = 2  # You can adjust this constant as needed
         similarity = eval(formula.replace('intersect', str(intersect)).replace('n', str(n)))
 
         return round(similarity, 2)
+
 
 
 class UserActivityViewSet(viewsets.ReadOnlyModelViewSet):
