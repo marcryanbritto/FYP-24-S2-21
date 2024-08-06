@@ -40,7 +40,10 @@ function UserActivityModal({ show, onClose }) {
   return (
     <div className="modal">
       <div className="modal-content">
-        <h3>User Activity</h3>
+        <div className="modal-header">
+          <h3 className="modal-title">User Activity</h3>
+          <button className="close-button" onClick={onClose}>&times;</button>
+        </div>
         {loading && <p>Loading...</p>}
         {error && <p>{error}</p>}
         {!loading && !error && (
