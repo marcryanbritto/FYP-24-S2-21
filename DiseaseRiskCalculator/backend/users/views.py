@@ -19,6 +19,26 @@ from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 import os
 
+from rest_framework import viewsets, status
+import re
+from rest_framework.decorators import action
+from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated, IsAdminUser, AllowAny
+from rest_framework_simplejwt.tokens import RefreshToken
+from django.db import transaction
+from rest_framework_simplejwt.views import TokenRefreshView
+from django.contrib.auth import authenticate
+from .models import User, UserActivity, Gene, Formula
+from .serializers import UserSerializer, UserCreateSerializer, GeneSerializer, GeneFileUploadSerializer, GeneTextInputSerializer, Gene, UserActivitySerializer, FormulaSerializer
+
+from cryptography.hazmat.primitives.asymmetric import dh
+from cryptography.hazmat.primitives import serialization
+from cryptography.hazmat.backends import default_backend
+from cryptography.hazmat.primitives.kdf.hkdf import HKDF
+from cryptography.hazmat.primitives import hashes
+from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
+import os
+
 # Generate DH parameters
 parameters = dh.generate_parameters(generator=2, key_size=2048, backend=default_backend())
 
@@ -70,10 +90,9 @@ class UserViewSet(viewsets.ModelViewSet):
         
         role = serializer.validated_data.get('role')
         
-        if role == 'doctor' and not request.user.is_staff:
-            return Response({"error": "Only admins can register doctors."}, 
-                            status=status.HTTP_403_FORBIDDEN)
-        
+        if role in ['admin', 'doctor'] and request.user.role != 'admin':
+            return Response({"error": "Only admins can create doctors."}, status=status.HTTP_403_FORBIDDEN)
+
         self.perform_create(serializer)
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
@@ -109,6 +128,8 @@ class UserViewSet(viewsets.ModelViewSet):
 
     @action(detail=True, methods=['patch'])
     def set_active(self, request, pk=None):
+        if request.user.role != 'admin':
+            return Response({"error": "Only admins can activate/deactivate users."}, status=status.HTTP_403_FORBIDDEN)
         user = self.get_object()
         user.is_active = request.data.get('is_active', user.is_active)
         user.save()
@@ -241,7 +262,7 @@ class GeneViewSet(viewsets.ModelViewSet):
         if not gene:
             return Response({"error": "Gene not found or you do not have permission to view it."}, status=status.HTTP_404_NOT_FOUND)
         return Response(GeneSerializer(gene).data, status=status.HTTP_200_OK)
-    
+
     @action(detail=False, methods=['post'], permission_classes=[IsAuthenticated])
     def calculate_similarity(self, request):
         # Log the request data
@@ -264,18 +285,6 @@ class GeneViewSet(viewsets.ModelViewSet):
         # Doctor Keygen
         doctor_private_key = generate_private_key()
         doctor_public_key = generate_public_key(doctor_private_key)
-
-        # Doctor's public key should be provided in the request
-        # doctor_public_key_bytes = request.data.get('doctor_public_key')
-        # if not doctor_public_key_bytes:
-        #     print("Error: Doctor's public key is required.")
-        #     return Response({"error": "Doctor's public key is required."}, status=status.HTTP_400_BAD_REQUEST)
-
-        # try:
-        #     doctor_public_key = load_public_key(doctor_public_key_bytes)
-        # except Exception as e:
-        #     print("Error loading doctor's public key:", e)
-        #     return Response({"error": "Invalid doctor's public key."}, status=status.HTTP_400_BAD_REQUEST)
 
         # Compute shared secret
         shared_key = compute_shared_secret(patient_private_key, doctor_public_key)
@@ -332,8 +341,6 @@ class GeneViewSet(viewsets.ModelViewSet):
 
         return round(similarity, 2)
 
-
-
 class UserActivityViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = UserActivity.objects.all().order_by('-timestamp')
     serializer_class = UserActivitySerializer
@@ -362,3 +369,5 @@ class FormulaViewSet(viewsets.ModelViewSet):
         formula = Formula.objects.create(formula=formula, created_by=request.user)
         UserActivity.objects.create(user=request.user, action='upload_formula')
         return Response(FormulaSerializer(formula).data, status=status.HTTP_201_CREATED)
+
+# -----------------------------------------------------------------------------------
