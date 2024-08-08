@@ -75,6 +75,11 @@ class UserViewSet(viewsets.ModelViewSet):
                             status=status.HTTP_403_FORBIDDEN)
         
         self.perform_create(serializer)
+        # Make newly created admins is_staff flag set to True
+        user = User.objects.get(email=serializer.data['email'])
+        if user.role == 'admin':
+            user.is_staff = True
+            user.save()
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
@@ -149,7 +154,7 @@ class PatientRegistrationView(viewsets.GenericViewSet):
 class GeneViewSet(viewsets.ModelViewSet):
     queryset = Gene.objects.all()
     serializer_class = GeneSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsAdminUser]
 
     @action(detail=False, methods=['post'])
     def upload(self, request):
