@@ -13,8 +13,7 @@ function ManageUsers() {
 
   const fetchUsers = async () => {
     try {
-      // const response = await axios.get('http://165.22.244.125:8000/api/users/', {
-        const response = await axios.get('http://127.0.0.1:8000/api/users/', {
+      const response = await axios.get('https://www.diseaseriskcalculator.com:8000/api/users/', {
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('accessToken')}` // Assume the token is stored in localStorage
         }
@@ -32,8 +31,7 @@ function ManageUsers() {
       const user = users.find(u => u.id === userId);
       const newStatus = !user.is_active;
       
-      // await axios.patch(`http://165.22.244.125:8000/api/users/${userId}/`, 
-      await axios.patch(`http://127.0.0.1:8000/api/users/${userId}/`, 
+      await axios.patch(`https://www.diseaseriskcalculator.com:8000/api/users/${userId}/`, 
         { is_active: newStatus },
         {
           headers: {

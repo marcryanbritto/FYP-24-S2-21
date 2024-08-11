@@ -30,16 +30,20 @@ function AddUserModal({ onClose, show }) {
       return;
     }
 
+    if (password.length < 8) {
+        setMessage('Passwords must be longer than 8 characters');
+        setShowMessageModal(true);
+        return;
+    }
+
     const userData = { email, password, role };
 
     try {
       let endpoint;
       if (role === 'patient') {
-        // endpoint = 'http://165.22.244.125:8000/api/patient-registration/';
-        endpoint = 'http://127.0.0.1:8000/api/patient-registration/'; // Local Host Test
+        endpoint = 'https://www.diseaseriskcalculator.com:8000/api/patient-registration/';
       } else if (role === 'doctor' || role === 'admin') {
-        // endpoint = 'http://165.22.244.125:8000/api/users/';
-        endpoint = 'http://127.0.0.1:8000/api/users/' // Local Host Test
+        endpoint = 'https://www.diseaseriskcalculator.com:8000/api/users/';
       } else {
         setMessage('Invalid role selected');
         setShowMessageModal(true);

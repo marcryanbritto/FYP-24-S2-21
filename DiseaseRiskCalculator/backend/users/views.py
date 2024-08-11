@@ -70,12 +70,11 @@ class UserViewSet(viewsets.ModelViewSet):
         
         role = serializer.validated_data.get('role')
         
-        if role == 'doctor' and not request.user.is_staff:
-            return Response({"error": "Only admins can register doctors."}, 
-                            status=status.HTTP_403_FORBIDDEN)
-        
+        if role in ['admin', 'doctor'] and request.user.role != 'admin':
+            return Response({"error": "Only admins can create doctors."}, status=status.HTTP_403_FORBIDDEN)
+
         self.perform_create(serializer)
-        # Make newly created admins is_staff flag set to True
+        # ensure is_staff flag is set at True
         user = User.objects.get(email=serializer.data['email'])
         if user.role == 'admin':
             user.is_staff = True
@@ -114,6 +113,8 @@ class UserViewSet(viewsets.ModelViewSet):
 
     @action(detail=True, methods=['patch'])
     def set_active(self, request, pk=None):
+        if request.user.role != 'admin':
+            return Response({"error": "Only admins can activate/deactivate users."}, status=status.HTTP_403_FORBIDDEN)
         user = self.get_object()
         user.is_active = request.data.get('is_active', user.is_active)
         user.save()
@@ -154,7 +155,7 @@ class PatientRegistrationView(viewsets.GenericViewSet):
 class GeneViewSet(viewsets.ModelViewSet):
     queryset = Gene.objects.all()
     serializer_class = GeneSerializer
-    permission_classes = [IsAuthenticated, IsAdminUser]
+    permission_classes = [IsAuthenticated]
 
     @action(detail=False, methods=['post'])
     def upload(self, request):
@@ -246,7 +247,7 @@ class GeneViewSet(viewsets.ModelViewSet):
         if not gene:
             return Response({"error": "Gene not found or you do not have permission to view it."}, status=status.HTTP_404_NOT_FOUND)
         return Response(GeneSerializer(gene).data, status=status.HTTP_200_OK)
-    
+
     @action(detail=False, methods=['post'], permission_classes=[IsAuthenticated])
     def calculate_similarity(self, request):
         # Log the request data
@@ -270,28 +271,11 @@ class GeneViewSet(viewsets.ModelViewSet):
         doctor_private_key = generate_private_key()
         doctor_public_key = generate_public_key(doctor_private_key)
 
-        # Doctor's public key should be provided in the request
-        # doctor_public_key_bytes = request.data.get('doctor_public_key')
-        # if not doctor_public_key_bytes:
-        #     print("Error: Doctor's public key is required.")
-        #     return Response({"error": "Doctor's public key is required."}, status=status.HTTP_400_BAD_REQUEST)
-
-        # try:
-        #     doctor_public_key = load_public_key(doctor_public_key_bytes)
-        # except Exception as e:
-        #     print("Error loading doctor's public key:", e)
-        #     return Response({"error": "Invalid doctor's public key."}, status=status.HTTP_400_BAD_REQUEST)
-
         # Compute shared secret
         shared_key = compute_shared_secret(patient_private_key, doctor_public_key)
 
         patient_gene_decrypted = patient_gene.decrypt_sequence()
         patient_gene_encrypted = encrypt_message(shared_key, patient_gene_decrypted)
-
-        # Print encrypted and decrypted strings for debugging
-        print("Encrypted patient gene sequence:", patient_gene_encrypted)
-        dec_test = decrypt_message(shared_key, patient_gene_encrypted)
-        print("Decrypted patient gene sequence:", dec_test.decode())
 
         # Get the latest formula
         formula = Formula.objects.order_by('-created_at').first()
@@ -307,11 +291,6 @@ class GeneViewSet(viewsets.ModelViewSet):
             decrypted_sequence = doctor_gene.decrypt_sequence()
             doctor_gene_encrypted = encrypt_message(shared_key, decrypted_sequence)
             
-            # Print encrypted and decrypted strings for doctor gene
-            print("Encrypted doctor gene sequence:", doctor_gene_encrypted)
-            decrypted_doctor_test = decrypt_message(shared_key, doctor_gene_encrypted)
-            print("Decrypted doctor gene sequence (for verification):", decrypted_doctor_test.decode())
-
             similarity = self.calculate_gene_similarity(shared_key, patient_gene_encrypted, doctor_gene_encrypted, formula.formula)
             if similarity >= 0.5:
                 results.append({
@@ -336,8 +315,6 @@ class GeneViewSet(viewsets.ModelViewSet):
         similarity = eval(formula.replace('intersect', str(intersect)).replace('n', str(n)))
 
         return round(similarity, 2)
-
-
 
 class UserActivityViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = UserActivity.objects.all().order_by('-timestamp')
@@ -367,3 +344,5 @@ class FormulaViewSet(viewsets.ModelViewSet):
         formula = Formula.objects.create(formula=formula, created_by=request.user)
         UserActivity.objects.create(user=request.user, action='upload_formula')
         return Response(FormulaSerializer(formula).data, status=status.HTTP_201_CREATED)
+
+# -----------------------------------------------------------------------------------

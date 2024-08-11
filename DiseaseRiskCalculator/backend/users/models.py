@@ -42,6 +42,9 @@ class User(AbstractBaseUser, PermissionsMixin):
         verbose_name = 'user'
         verbose_name_plural = 'users'
 
+    def is_admin(self):
+        return self.role == 'admin'
+
 
 class Gene(models.Model):
     name = models.CharField(max_length=255)

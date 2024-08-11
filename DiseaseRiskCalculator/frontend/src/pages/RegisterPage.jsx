@@ -24,13 +24,19 @@ function RegisterPage() {
       return;
     }
 
+    // Password validation
+    if (password.length < 8) {
+      setError('Password length must be longer than 8 characters.');
+      return;
+    }
+
     if (password !== confirmPassword) {
       setError('Passwords do not match');
       return;
     }
 
     try {
-      const response = await axios.post('http://localhost:8000/api/patient-registration/', {
+      const response = await axios.post('https://www.diseaseriskcalculator.com:8000/api/patient-registration/', {
         email: email,
         password: password,
         role: 'patient'

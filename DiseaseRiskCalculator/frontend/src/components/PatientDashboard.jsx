@@ -26,8 +26,7 @@ function PatientDashboard() {
 
   const fetchGenes = async () => {
     try {
-      // const response = await axios.get('http://165.22.244.125:8000/api/genes/my_genes/', {
-      const response = await axios.get('http://127.0.0.1:8000/api/genes/my_genes/', {
+      const response = await axios.get('https://www.diseaseriskcalculator.com:8000/api/genes/my_genes/', {
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('accessToken')}` // Assume the token is stored in localStorage
         }
@@ -43,8 +42,7 @@ function PatientDashboard() {
   useEffect(() => {
     const fetchFormula = async () => {
       try {
-        // const response = await axios.get('http://165.22.244.125:8000/api/formulas/', {
-        const response = await axios.get('http://127.0.0.1:8000/api/formulas/', {
+        const response = await axios.get('https://www.diseaseriskcalculator.com:8000/api/formulas/', {
           headers: {
             'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
             'Content-Type': 'application/json',
@@ -68,8 +66,7 @@ function PatientDashboard() {
   useEffect(() => {
     const refreshAccessToken = async () => {
       try {
-        // const response = await axios.post('http://165.22.244.125:8000/api/token/refresh/', {
-        const response = await axios.post('http://127.0.0.1:8000/api/token/refresh/', {
+        const response = await axios.post('https://www.diseaseriskcalculator.com:8000/api/token/refresh/', {
           refresh: localStorage.getItem('refreshToken')
         });
         localStorage.setItem('accessToken', response.data.access);
@@ -95,8 +92,7 @@ function PatientDashboard() {
 
   const handleSaveGene = async (geneData) => {
     try {
-      // await axios.post(`http://165.22.244.125:8000/api/genes/edit_gene/`, {
-      await axios.post(`http://127.0.0.1:8000/api/genes/edit_gene/`, {
+      await axios.post(`https://www.diseaseriskcalculator.com:8000/api/genes/edit_gene/`, {
         gene_id: geneData.id,
         name: geneData.name,
         sequence: geneData.sequence,
@@ -116,8 +112,7 @@ function PatientDashboard() {
 
   const handleUploadGene = async (formData) => {
     try {
-      // await axios.post('http://165.22.244.125:8000/api/genes/upload/', formData, {
-      await axios.post('http://127.0.0.1:8000/api/genes/upload/', formData, {
+      await axios.post('https://www.diseaseriskcalculator.com:8000/api/genes/upload/', formData, {
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
           'Content-Type': 'multipart/form-data',
@@ -132,8 +127,7 @@ function PatientDashboard() {
 
   const handleDeleteGene = async () => {
     try {
-      // await axios.delete(`http://165.22.244.125:8000/api/genes/delete_gene/`, {
-      await axios.delete(`http://127.0.0.1:8000/api/genes/delete_gene/`, {
+      await axios.delete(`https://www.diseaseriskcalculator.com:8000/api/genes/delete_gene/`, {
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
           'Content-Type': 'application/json',
@@ -149,8 +143,7 @@ function PatientDashboard() {
 
   const handleSaveFormula = async (newFormula) => {
     try {
-      // await axios.post('http://165.22.244.125:8000/api/formulas/', {
-      await axios.post('http://127.0.0.1:8000/api/formulas/', {
+      await axios.post('https://www.diseaseriskcalculator.com:8000/api/formulas/', {
         formula: newFormula,
       }, {
         headers: {

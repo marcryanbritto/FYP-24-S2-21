@@ -11,8 +11,7 @@ function ViewSimilarityGeneModal({ geneId, onSave, onClose, show, token }) {
     if (show && geneId) {
       const token = localStorage.getItem('accessToken');
       // Fetch gene data
-      // fetch(`http://165.22.244.125:8000/api/genes/${geneId}/`, {
-      fetch(`http://127.0.0.1:8000/api/genes/${geneId}/`, {
+      fetch(`https://www.diseaseriskcalculator.com:8000/api/genes/${geneId}/`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -30,8 +29,7 @@ function ViewSimilarityGeneModal({ geneId, onSave, onClose, show, token }) {
   const fetchSimilarityResult = async (id) => {
     const token = localStorage.getItem('accessToken');
     try {
-      // const response = await axios.post('http://165.22.244.125:8000/api/genes/calculate_similarity/', {
-      const response = await axios.post('http://127.0.0.1:8000/api/genes/calculate_similarity/', {
+      const response = await axios.post('https://www.diseaseriskcalculator.com:8000/api/genes/calculate_similarity/', {
         patient_gene_id: id,
       }, {
         headers: {

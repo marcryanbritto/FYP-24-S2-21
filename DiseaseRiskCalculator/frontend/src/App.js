@@ -26,7 +26,7 @@ function App() {
     const accessToken = localStorage.getItem('accessToken');
     const refreshToken = localStorage.getItem('refreshToken');
     try {
-      const response = await fetch('http://localhost:8000/api/users/logout/', {
+      const response = await fetch('https://www.diseaseriskcalculator.com:8000/api/users/logout/', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
